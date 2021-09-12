@@ -66,7 +66,7 @@ model = dict(
             conv_out_channels=256,
             num_classes=13,
             loss_mask=dict(type='HausdorffDTLoss'),
-            class_agnostic=True)),
+            class_agnostic=False)),
     train_cfg=dict(
         rpn=dict(
             assigner=dict(
