@@ -30,17 +30,15 @@ class HausdorffDTLoss(nn.Module):
         imgs: [rois, w, h]
         """
         field = torch.zeros_like(imgs)
-
-        for label in range(len(imgs)):
-            fg_mask = imgs[label] > 0.5
-            if fg_mask.any():
-                fg_dist = edt(fg_mask)
-                bg_mask = ~fg_mask
-                if bg_mask.any():
-                    bg_dist = edt(bg_mask)
-                    field[label] = torch.tensor(fg_dist/np.max(fg_dist) + bg_dist/np.max(bg_dist))
-                else:
-                    field[label] = torch.tensor(fg_dist/np.max(fg_dist))
+        fg_mask = imgs > 0.5
+        if fg_mask.any():
+            fg_dist = edt(fg_mask)
+            bg_mask = ~fg_mask
+            if bg_mask.any():
+                bg_dist = edt(bg_mask)
+                field = torch.tensor(fg_dist/np.max(fg_dist) + bg_dist/np.max(bg_dist))
+            else:
+                field = torch.tensor(fg_dist/np.max(fg_dist))
 
         return field
 
@@ -50,25 +48,21 @@ class HausdorffDTLoss(nn.Module):
             distance = None
             hd_loss = None
             for i in range(preds.shape[0]):
-                preds_roi = preds[i]
-                targets_roi = torch.zeros_like(preds_roi)
-                targets_roi[labels[i]] = targets[i]
-
-                preds_dt = self.distance_field(preds_roi.cpu()).cuda().float()
-                targets_dt = self.distance_field(targets_roi.cpu()).cuda().float()
-
+                pred = preds[i][labels[i]]
+                target = targets[i]
+                preds_dt = self.distance_field(pred.cpu()).cuda().float()
+                targets_dt = self.distance_field(target.cpu()).cuda().float()
                 if distance is not None:
                     distance += preds_dt ** self.alpha + targets_dt ** self.alpha
                 else:
                     distance = preds_dt ** self.alpha + targets_dt ** self.alpha
-
-                preds_error = (preds_roi - targets_roi) ** 2
+                preds_error = (pred - target) ** 2
                 if distance.device != preds_error.device:
                     distance = distance.to(preds_error.device).type_as(preds_error)
-                multipled = torch.einsum("rxy,rxy->rxy", preds_error, distance)
+                multipled = torch.einsum("xy,xy->xy", preds_error, distance)
                 if hd_loss is not None:
                     hd_loss += multipled.mean()
                 else:
                     hd_loss = multipled.mean()
-                    
+        hd_loss = hd_loss / preds.shape[0]        
         return hd_loss
