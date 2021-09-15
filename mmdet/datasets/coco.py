@@ -20,21 +20,23 @@ from .custom import CustomDataset
 @DATASETS.register_module()
 class CocoDataset(CustomDataset):
 
-    CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
-               'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
-               'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
-               'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe',
-               'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
-               'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
-               'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
-               'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
-               'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot',
-               'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
-               'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop',
-               'mouse', 'remote', 'keyboard', 'cell phone', 'microwave',
-               'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock',
-               'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush')
-
+    # CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
+    #            'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
+    #            'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
+    #            'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe',
+    #            'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
+    #            'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
+    #            'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
+    #            'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
+    #            'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot',
+    #            'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
+    #            'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop',
+    #            'mouse', 'remote', 'keyboard', 'cell phone', 'microwave',
+    #            'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock',
+    #            'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush')
+    CLASSES = ("Atelectasis","Calcification","Cardiomegaly","Consolidation","Diffuse Nodule",
+               "Effusion","Emphysema","Fibrosis","Fracture","Mass","Nodule","Pleural Thickening", 
+               "Pneumothorax")
     def load_annotations(self, ann_file):
         """Load annotation from COCO style annotation file.
 
@@ -364,7 +366,7 @@ class CocoDataset(CustomDataset):
                  metric='bbox',
                  logger=None,
                  jsonfile_prefix=None,
-                 classwise=False,
+                 classwise=True,
                  proposal_nums=(100, 300, 1000),
                  iou_thrs=None,
                  metric_items=None):
@@ -463,7 +465,7 @@ class CocoDataset(CustomDataset):
             cocoEval = COCOeval(cocoGt, cocoDt, iou_type)
             cocoEval.params.catIds = self.cat_ids
             cocoEval.params.imgIds = self.img_ids
-            cocoEval.params.maxDets = list(proposal_nums)
+            # cocoEval.params.maxDets = list(proposal_nums)
             cocoEval.params.iouThrs = iou_thrs
             # mapping of cocoEval.stats
             coco_metric_names = {
