@@ -5,8 +5,7 @@ from ..builder import LOSSES
 
 def dice_loss(pred, 
               target,
-              label,
-              smooth):
+              label):
     """Calculate the Dice loss
     Args:
         pred (torch.Tensor): The prediction with shape (N, C), C is the number
@@ -21,9 +20,10 @@ def dice_loss(pred,
     inds = torch.arange(0, num_rois, dtype=torch.long, device=pred.device)
     pred_slice = pred[inds, label].squeeze(1)
     pred_slice = torch.sigmoid(pred_slice)
+    
     intersect = 2. * torch.sum(pred_slice * target, (1,2))
     union = torch.sum(pred_slice + target, (1,2))
-    dice_score = intersect / union 
+    dice_score = intersect / union
     loss = 1 - dice_score
     return loss.mean()
 
@@ -34,4 +34,4 @@ class DiceLoss(nn.Module):
         super(DiceLoss, self).__init__()
 
     def forward(self, pred, target, label):
-        return dice_loss(cls_score, label, weight)
+        return dice_loss(pred, target, label)

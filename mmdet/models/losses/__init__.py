@@ -20,8 +20,10 @@ from .varifocal_loss import VarifocalLoss
 from .hausdorff_loss import HausdorffDTLoss
 from .boundary_loss import BoundaryLoss
 from .dice_loss import DiceLoss
-from .combine_loss import CombineLoss
-from .bce_and_hd import BCEandHD
+from .combine_loss import (
+    BCE_Boundary_Loss, 
+    BCE_Dice_Loss, 
+    BCE_HD_Loss)
 
 __all__ = [
     'accuracy', 'Accuracy', 'cross_entropy', 'binary_cross_entropy',
@@ -33,5 +35,6 @@ __all__ = [
     'l1_loss', 'isr_p', 'carl_loss', 'AssociativeEmbeddingLoss',
     'GaussianFocalLoss', 'QualityFocalLoss', 'DistributionFocalLoss',
     'VarifocalLoss', 'KnowledgeDistillationKLDivLoss', 'SeesawLoss',
-    'HausdorffDTLoss', 'BoundaryLoss', 'DiceLoss', 'CombineLoss', 'BCEandHD'
+    'HausdorffDTLoss', 'BoundaryLoss', 'DiceLoss', 'BCE_Boundary_Loss', 
+    'BCE_Dice_Loss', 'BCE_HD_Loss'
 ]

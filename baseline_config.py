@@ -67,7 +67,7 @@ model = dict(
             num_classes=13,
             # loss_mask=dict(
             #     type='CrossEntropyLoss', use_mask=True, loss_weight=1.0))),
-            loss_mask=dict(type='CombineLoss'))),
+            loss_mask=dict(type='BCE_Dice_Loss'))),
     train_cfg=dict(
         rpn=dict(
             assigner=dict(
@@ -159,7 +159,7 @@ test_pipeline = [
 ]
 data = dict(
     samples_per_gpu=2,
-    workers_per_gpu=4,
+    workers_per_gpu=0,
     train=dict(
         type='CocoDataset',
         ann_file='/mnt/c/Users/Dat/Desktop/ML/medical-project/datasets/ChestX-Det/coco_format_v2/fold0/train.json',
@@ -230,7 +230,7 @@ data = dict(
                 ])
         ]))
 evaluation = dict(metric='segm', interval=1, save_best='segm_mAP')
-optimizer = dict(type='SGD', lr=0.005, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.0025, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=None)
 lr_config = dict(
     policy='step',
@@ -244,7 +244,7 @@ log_config = dict(interval=50, hooks=[dict(type='TextLoggerHook')])
 custom_hooks = [dict(type='NumClassCheckHook')]
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = '/mnt/c/Users/Dat/Desktop/ML/medical-project/repo/mmdetection/checkpoints/mask_rcnn_r50_fpn_dconv_c3-c5_1x_coco_20200203-4d9ad43b.pth'
+load_from = '/mnt/c/Users/Dat/Desktop/ML/medical-project/maskrcnn-result/checkpoints/mask_rcnn_r50_fpn_dconv_c3-c5_1x_coco_20200203-4d9ad43b.pth'
 resume_from = None
 workflow = [('train', 1)]
 CLASSES = ('Atelectasis', 'Calcification', 'Cardiomegaly', 'Consolidation',
