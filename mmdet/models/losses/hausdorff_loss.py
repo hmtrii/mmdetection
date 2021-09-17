@@ -30,7 +30,7 @@ class HausdorffDTLoss(nn.Module):
         imgs: [rois, w, h]
         """
         field = np.zeros(imgs.shape)
-        for roi in imgs.shape[0]:
+        for roi in range(imgs.shape[0]):
             fg_mask = imgs[roi] > 0.5
             if fg_mask.any():
                 fg_dist = edt(fg_mask)
@@ -57,27 +57,3 @@ class HausdorffDTLoss(nn.Module):
         hd_loss = multipled.mean()
 
         return hd_loss
-
-        # preds = torch.sigmoid(preds)
-        # with torch.no_grad():
-        #     distance = None
-        #     hd_loss = None
-        #     for i in range(preds.shape[0]):
-        #         pred = preds[i][labels[i]]
-        #         target = targets[i]
-        #         preds_dt = self.distance_field(pred.cpu()).cuda().float()
-        #         targets_dt = self.distance_field(target.cpu()).cuda().float()
-        #         if distance is not None:
-        #             distance += preds_dt ** self.alpha + targets_dt ** self.alpha
-        #         else:
-        #             distance = preds_dt ** self.alpha + targets_dt ** self.alpha
-        #         preds_error = (pred - target) ** 2
-        #         if distance.device != preds_error.device:
-        #             distance = distance.to(preds_error.device).type_as(preds_error)
-        #         multipled = torch.einsum("xy,xy->xy", preds_error, distance)
-        #         if hd_loss is not None:
-        #             hd_loss += multipled.mean()
-        #         else:
-        #             hd_loss = multipled.mean()
-        # hd_loss = hd_loss / preds.shape[0]        
-        # return hd_loss

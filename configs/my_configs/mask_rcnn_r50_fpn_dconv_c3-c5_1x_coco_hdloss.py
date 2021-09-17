@@ -241,7 +241,7 @@ data = dict(
                  'Fibrosis', 'Fracture', 'Mass', 'Nodule',
                  'Pleural Thickening', 'Pneumothorax')))
 evaluation = dict(metric='segm', interval=1, save_best='segm_mAP')
-optimizer = dict(type='SGD', lr=0.005, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.0025, momentum=0.9, weight_decay=0.00001)
 optimizer_config = dict(grad_clip=None)
 lr_config = dict(
     policy='step',
@@ -251,7 +251,7 @@ lr_config = dict(
     step=[8, 11])
 runner = dict(type='EpochBasedRunner', max_epochs=50)
 checkpoint_config = dict(interval=1, max_keep_ckpts=1)
-log_config = dict(interval=50, hooks=[dict(type='TextLoggerHook')])
+log_config = dict(interval=50, hooks=[dict(type='TensorboardLoggerHook')])
 custom_hooks = [dict(type='NumClassCheckHook')]
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
