@@ -65,7 +65,7 @@ model = dict(
             in_channels=256,
             conv_out_channels=256,
             num_classes=13,
-            loss_mask=dict(type='BCEandHD'),
+            loss_mask=dict(type='BCE_HD_Loss'),
             class_agnostic=False)),
     train_cfg=dict(
         rpn=dict(
@@ -157,7 +157,7 @@ test_pipeline = [
         ])
 ]
 data = dict(
-    samples_per_gpu=4,
+    samples_per_gpu=2,
     workers_per_gpu=4,
     train=dict(
         type='CocoDataset',
