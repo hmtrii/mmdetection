@@ -33,11 +33,13 @@ def compute_sdf(target):
     return normalized_sdf
 
 
-def boundary_loss(pred, target, label):
+def AAAI_sdf_loss(pred, target, label):
     num_rois = pred.size()[0]
     inds = torch.arange(0, num_rois, dtype=torch.long, device=pred.device)
     pred_slice = pred[inds, label].squeeze(1)
     pred_slice = torch.sigmoid(pred_slice)
+
+    # compute L1 loss between SDF Prediction and GT_SDF
     gt_sdf_npy = compute_sdf(target.cpu().numpy())
     gt_sdf = torch.from_numpy(gt_sdf_npy).float().cuda()
 
@@ -47,28 +49,22 @@ def boundary_loss(pred, target, label):
         union = torch.sum(target + gt_dis_prob)
         dice = (2 * intersect) / union
         # dice loss should be <= 0.05 (Dice Score>0.95), which means the pre-computed SDF is right.
-        # if dice < 0.95:
-        print('[INFO] dice loss = ', 1 - dice.cpu().numpy())
+        print('dice loss = ', 1 - dice.cpu().numpy())
     
-    # debug
-    if False:
-        import matplotlib.pyplot as plt 
-        plt.figure()
-        plt.subplot(121), plt.imshow(gt_sdf_npy[1,:,:]), plt.colorbar()
-        plt.subplot(122), plt.imshow(np.uint8(target.cpu().numpy()[1,:,:]>0)), plt.colorbar()
-        plt.show()
-
-    multipled = pred_slice * gt_sdf
-    bd_loss = multipled.mean()
-    return bd_loss
+    # compute product and L1 loss between SDF Prediction and GT_SDF
+    smooth = 1e-5
+    intersect = torch.sum(pred_slice * gt_sdf)
+    pd_sum = torch.sum(pred_slice ** 2)
+    gt_sum = torch.sum(gt_sdf ** 2)
+    L_product = (intersect + smooth) / (intersect + pd_sum + gt_sum + smooth)
+    L_SDF_AAAI = - L_product + torch.norm(pred_slice - gt_sdf, 1)/torch.numel(pred_slice)
+    return L_SDF_AAAI
 
 
 @LOSSES.register_module()
-class BoundaryLoss(nn.Module):
-    """Boundary Loss based on signed distance map"""
+class SDFLoss(nn.Module):
     def __init__(self):
-        super(BoundaryLoss, self).__init__()
+        super(SDFLoss, self).__init__()
 
     def forward(self, pred, target, label):
-        return boundary_loss(pred, target, label)
-    
+        return AAAI_sdf_loss(pred, target, label)
