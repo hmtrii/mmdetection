@@ -23,13 +23,16 @@ def compute_sdf(target):
     for r in range(target.shape[0]):
         posmask = img_gt[r].astype(np.bool)
         if posmask.any():
-            negmask = ~posmask
-            posdis = distance(posmask)
-            negdis = distance(negmask)
-            boundary = skimage_seg.find_boundaries(posmask, mode="inner").astype(np.uint8)
-            sdf = (negdis-np.min(negdis))/(np.max(negdis)-np.min(negdis)) - (posdis-np.min(posdis))/(np.max(posdis)-np.min(posdis))
-            sdf[boundary==1] = 0
-            normalized_sdf[r] = sdf
+            if np.all(posmask):
+                normalized_sdf[r] = -1.0
+            else:
+                negmask = ~posmask
+                posdis = distance(posmask)
+                negdis = distance(negmask)
+                boundary = skimage_seg.find_boundaries(posmask, mode="inner").astype(np.uint8)
+                sdf = (negdis-np.min(negdis))/(np.max(negdis)-np.min(negdis)) - (posdis-np.min(posdis))/(np.max(posdis)-np.min(posdis))
+                sdf[boundary==1] = 0
+                normalized_sdf[r] = sdf
     return normalized_sdf
 
 
