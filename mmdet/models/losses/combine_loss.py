@@ -99,8 +99,8 @@ class Dice_BD_Loss(nn.Module):
 
 @LOSSES.register_module()
 class Dice_HD_Loss(nn.Module):
-    def __init__(self):
-        super(Dice_BD_Loss, self).__init__()
+    def __init__(self, alpha,step_alpha,max_alpha,alpha_strategy):
+        super(Dice_HD_Loss, self).__init__()
         loss_mask_1=dict(type='DiceLoss')
         loss_mask_2=dict(type='HausdorffDTLoss')
         self.cls_criterion_1 = build_loss(loss_mask_1)
@@ -130,8 +130,8 @@ class Dice_HD_Loss(nn.Module):
 
 @LOSSES.register_module()
 class BCE_SDF_Loss(nn.Module):
-    def __init__(self):
-        super(Dice_BD_Loss, self).__init__()
+    def __init__(self, alpha,step_alpha,max_alpha,alpha_strategy):
+        super(BCE_SDF_Loss, self).__init__()
         loss_mask_1=dict(type='CrossEntropyLoss', use_mask=True, loss_weight=1.0)
         loss_mask_2=dict(type='SDFLoss')
         self.cls_criterion_1 = build_loss(loss_mask_1)
@@ -161,8 +161,8 @@ class BCE_SDF_Loss(nn.Module):
 
 @LOSSES.register_module()
 class Dice_SDF_Loss(nn.Module):
-    def __init__(self):
-        super(Dice_BD_Loss, self).__init__()
+    def __init__(self, alpha,step_alpha,max_alpha,alpha_strategy):
+        super(Dice_SDF_Loss, self).__init__()
         loss_mask_1=dict(type='DiceLoss')
         loss_mask_2=dict(type='SDFLoss')
         self.cls_criterion_1 = build_loss(loss_mask_1)
@@ -192,7 +192,7 @@ class Dice_SDF_Loss(nn.Module):
 
 @LOSSES.register_module()
 class BCE_Dice_Loss(nn.Module):
-    def __init__(self):
+    def __init__(self, alpha,step_alpha,max_alpha,alpha_strategy):
         super(BCE_Dice_Loss, self).__init__()
         loss_mask_1=dict(type='CrossEntropyLoss', use_mask=True, loss_weight=1.0)
         loss_mask_2=dict(type='DiceLoss')
