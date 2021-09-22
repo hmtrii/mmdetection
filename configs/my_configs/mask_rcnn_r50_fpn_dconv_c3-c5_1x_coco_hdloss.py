@@ -65,7 +65,7 @@ model = dict(
             in_channels=256,
             conv_out_channels=256,
             num_classes=13,
-            loss_mask=dict(type='BCE_HD_Loss'),
+            loss_mask=dict(type='BCE_HD_Loss', alpha=0.01, step_alpha=0.02, max_alpha=1.0, alpha_strategy="rebalance"),
             class_agnostic=False)),
     train_cfg=dict(
         rpn=dict(
