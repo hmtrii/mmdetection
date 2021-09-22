@@ -65,9 +65,9 @@ model = dict(
             in_channels=256,
             conv_out_channels=256,
             num_classes=13,
-            loss_mask=dict(
-                type='CrossEntropyLoss', use_mask=True, loss_weight=1.0))),
-            # loss_mask=dict(type='BCE_Boundary_Loss', alpha=1.0, step_alpha=0.0, max_alpha=1.0, alpha_strategy="constant"))),
+            # loss_mask=dict(
+            #     type='CrossEntropyLoss', use_mask=True, loss_weight=1.0))),
+            loss_mask=dict(type='BCE_SDF_Loss', start_alpha=1.0, step_alpha=0.0, max_alpha=1.0, alpha_strategy="constant"))),
     train_cfg=dict(
         rpn=dict(
             assigner=dict(
@@ -158,7 +158,7 @@ test_pipeline = [
         ])
 ]
 data = dict(
-    samples_per_gpu=2,
+    samples_per_gpu=1,
     workers_per_gpu=0,
     train=dict(
         type='CocoDataset',

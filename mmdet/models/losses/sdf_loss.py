@@ -40,7 +40,9 @@ def AAAI_sdf_loss(pred, target, label):
     num_rois = pred.size()[0]
     inds = torch.arange(0, num_rois, dtype=torch.long, device=pred.device)
     pred_slice = pred[inds, label].squeeze(1)
-    pred_slice = torch.sigmoid(pred_slice)
+    pred_slice = torch.tanh(pred_slice)
+    pred_slice = pred_slice * -1.0
+    # pred_slice = torch.sigmoid(pred_slice)
 
     # compute L1 loss between SDF Prediction and GT_SDF
     gt_sdf_npy = compute_sdf(target.cpu().numpy())
@@ -53,7 +55,15 @@ def AAAI_sdf_loss(pred, target, label):
         dice = (2 * intersect) / union
         # dice loss should be <= 0.05 (Dice Score>0.95), which means the pre-computed SDF is right.
         print('dice loss = ', 1 - dice.cpu().numpy())
-    
+
+    if False:
+        import matplotlib.pyplot as plt 
+        plt.figure()
+        plt.subplot(121), plt.imshow(gt_sdf_npy[0,:,:]), plt.colorbar()
+        plt.subplot(122), plt.imshow(np.uint8(target.cpu().numpy()[0,:,:]>0)), plt.colorbar()
+        plt.show()
+        import pdb; pdb.set_trace()
+
     # compute product and L1 loss between SDF Prediction and GT_SDF
     smooth = 1e-5
     intersect = torch.sum(pred_slice * gt_sdf)
